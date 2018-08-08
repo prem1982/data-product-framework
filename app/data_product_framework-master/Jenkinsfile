@@ -1,0 +1,117 @@
+// Jenkinsfile for data_product_framework
+
+
+caughtError = 0
+try {
+  node("basic") {
+    docker.withRegistry("https://bossanova-cloud-container.jfrog.io/", 'jenkins_build_jumpcloud') {
+      docker.image("bossanova-cloud-container.jfrog.io/build-images/data-product-build:0.0.2").inside("-u root") {
+
+        stage ('Checkout Code for C++ build') {
+          checkout([
+            $class: 'GitSCM', branches: scm.branches,
+            extensions: scm.extensions + [
+              [
+                $class: 'SubmoduleOption',
+                parentCredentials: true,
+                disableSubmodules: false,
+                recursiveSubmodules: true,
+                trackingSubmodules: false
+              ],
+              [
+                $class: 'CloneOption',
+                noTags: false,
+                shallow: false,
+                depth: 0,
+                reference: ''
+              ]
+            ],
+            userRemoteConfigs: scm.userRemoteConfigs
+          ])
+        }
+
+        stage('Build C++ Libraries and Clients') {
+          sh 'bazel build --config=release :data_product'
+        }
+
+        stage('Build and Run C++ Unit Tests') {
+          sh 'bazel test --config=release :cpp_tests'
+        }
+
+        stage('Build Debian') {
+          sh 'bazel build --config=release :bnr_data_product-debian'
+        }
+
+      }
+
+      docker.image("bossanova-cloud-container.jfrog.io/build-images/data-product-python-build:0.0.1").inside("-u root") {
+
+        stage ('Checkout Code for Python build') {
+          checkout([
+            $class: 'GitSCM', branches: scm.branches,
+            extensions: scm.extensions + [
+              [
+                $class: 'SubmoduleOption',
+                parentCredentials: true,
+                disableSubmodules: false,
+                recursiveSubmodules: true,
+                trackingSubmodules: false
+              ],
+              [
+                $class: 'CloneOption',
+                noTags: false,
+                shallow: false,
+                depth: 0,
+                reference: ''
+              ]
+            ],
+            userRemoteConfigs: scm.userRemoteConfigs
+          ])
+        }
+
+        stage('Install pylint') {
+          sh 'pip install pylint==1.8.4'
+        }
+
+        stage('Build Python Libraries and Clients') {
+          sh 'bazel build --config=release :python_framework'
+        }
+
+        stage('Build and Run Python Unit Tests') {
+          sh 'bazel test --config=release :python_tests'
+        }
+
+        stage('Build Python wheel and publish') {
+          publishWheel {
+            artifactoryPattern = "data_product_framework-*-py2-none-any.whl"
+            artifactoryTarget = "data_product_framework"
+          }
+        }
+
+      }
+    }
+  }
+  // We got through all stages without an error
+  currentBuild.result = "SUCCESS"
+
+// We caught an error, report failure
+} catch (caughtError) {
+  currentBuild.result = "FAILURE"
+  caughtError = caughtError
+  echo "Build failed."
+
+// Cleanup workspace, send slack message, pass along any errors
+} finally {
+  node("basic") {
+    stage("Cleanup Workspace") {
+      step([$class: 'WsCleanup'])
+    }
+
+    sendBuildResultStatus(currentBuild.result, 'data_product_build')
+
+    if (caughtError != 0) {
+      throw caughtError
+    }
+  }
+}
+

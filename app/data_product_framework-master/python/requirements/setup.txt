@@ -1,0 +1,5 @@
+pip==9.0.3
+semantic_version==2.6.0
+gitpython
+setuptools==38.5.2
+wheel==0.30.0

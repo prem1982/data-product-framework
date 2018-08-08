@@ -1,0 +1,62 @@
+# Backup types
+*.swp
+\#*\#
+.#*
+*~
+*.bak
+
+# Python artifacts
+*.pyc
+
+# Compressed files
+*.bz2
+*.tar
+*.gz
+*.zip
+*.rar
+*.tgz
+*.tbz2
+
+# Log files
+*.log
+log.txt
+
+# Bazel stuff
+bazel-*
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Virtualenv folders
+virtualenv
+.virtualenv

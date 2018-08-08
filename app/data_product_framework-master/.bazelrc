@@ -1,0 +1,6 @@
+# Always use
+build --cxxopt="-Wall" --cxxopt="-Werror" --cxxopt="-Wextra"
+
+# Release vs Debug
+build:debug --cxxopt="-DDEBUG" --copt="-DDEBUG" --cxxopt="-g" --copt="-g"
+build:release --cxxopt="-DNDEBUG" --copt="-DNDEBUG" --cxxopt="-O3" --copt="-O3"

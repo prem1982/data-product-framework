@@ -1,0 +1,61 @@
+{
+  "LabelReaderParams": {
+    "scale_factor": 0.5,
+    "nominal_patch" : {
+        "x" : 0.60,
+        "y" : 0.12,
+        "width" : 0.33,
+        "height" : 0.76
+      },
+    "PriceDetectorParams": {
+      "PreProcessorParams": {
+        "adaptive_thresh_blocksize": 51,
+        "adaptive_thresh_mean_value": 30
+      },
+      "MserDoerParams": {
+        "open_kernel_size": {
+          "width": 7,
+          "height": 7
+        },
+        "close_kernel_size": {
+          "width": 5,
+          "height": 5
+        },
+        "mop_kernel_size": {
+          "width": 20,
+          "height": 5
+        },
+        "erode_kernel_size": {
+          "width": 5,
+          "height": 7
+        },
+        "delta" : 5,
+        "min_area" : 250,
+        "max_area" : 12500,
+        "max_variation" : 0.25,
+        "min_diversity":0.1,
+        "group_threshold": 1,
+        "group_epsilon": 0.4
+      },
+      "PostProcessorParams": {
+        "min_area": 5000,
+        "max_area": 21000,
+        "height_thresh": 10,
+        "distance_thresh": 100,
+        "y_thresh": 10,
+        "min_aspect": 0.4,
+        "max_aspect": 1.5,
+        "img_buffer": 0,
+        "group_threshold": 1,
+        "group_epsilon": 0.4
+      }
+    },
+    "PriceReaderParams": {
+      "PreProcessorParams": {
+        "denoising_h": 3,
+        "denoising_templateWindowSize": 9,
+        "denoising_searchWindowSize": 21
+      }
+    }
+  }
+}
